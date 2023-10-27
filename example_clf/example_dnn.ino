@@ -5,18 +5,19 @@ void setup() {
 
     while (!dnn_model.begin()) {
         Serial.print("Error in NN initialization: ");
-        Serial.println(sineNN.getErrorMessage());
+        Serial.println(dnn_model.getErrorMessage());
     }
 }
 
 void loop() {
     
-        float input[2] = {0.3552, -0.2074};
+        float input[2] = {0.31699103, -2.38886223};
         float y_pred = dnn_model.predict(input);
+        
         Serial.println("Expected output: ");
-        Serial.print(12.8171)
+        Serial.println(-48.130339359863974);
+        
         Serial.println("Predicted output:");
-        Serial.print(y_pred)
+        Serial.println(y_pred);
         delay(1000);
     }
-}
