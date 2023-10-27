@@ -17,8 +17,9 @@ DATA_FILE_NAME = "anemometer_data_full.csv"
 HEADER_FILES_FOLDER = "headerfiles"
 HEADER_FILE_NAME = "dnn_model.h"
 
-EPOCHS = 50
+EPOCHS = 80
 BATCH_SIZE = 32
+LEARNING_RATE = 0.001
 indx = range(EPOCHS)
 data = pd.read_csv(join(DATA_FOLDER, DATA_FILE_NAME), index_col=None, header=0)
 
@@ -34,15 +35,20 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.30, random_state=42
 )
 
+adamopt = Adam(learning_rate = LEARNING_RATE)
+
 dnn_model = Sequential()
-dnn_model.add(Dense(4, kernel_initializer='normal',input_dim = X_train.shape[1], activation='relu'))
-dnn_model.add(Dense(8, kernel_initializer='normal',activation='relu'))
+dnn_model.add(Dense(32, kernel_initializer='normal',input_dim = X_train.shape[1], activation='relu'))
+dnn_model.add(Dense(64, kernel_initializer='normal',activation='relu'))
+dnn_model.add(Dense(128, kernel_initializer='normal',activation='relu'))
 dnn_model.add(Dense(16, kernel_initializer='normal',activation='relu'))
-dnn_model.add(Dense(8, kernel_initializer='normal',activation='relu'))
 dnn_model.add(Dense(1, kernel_initializer='normal',activation='linear'))
 
 
-dnn_model.compile(loss='mean_absolute_error', optimizer='adam', metrics=['mean_absolute_error'])
+dnn_model.compile(loss='mean_absolute_error', 
+                  optimizer=adamopt,
+                  metrics=['mean_absolute_error'])
+
 dnn_model.summary()
 
 history = dnn_model.fit(X_train, 
