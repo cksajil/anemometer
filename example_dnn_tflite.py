@@ -1,11 +1,14 @@
+# Please install the following
+# Source https://eloquentarduino.com/tensorflow-lite-esp32/
+# pip install everywhereml
+# EloquentTinyML Library in Arduino
+
 from os.path import join
 from keras.layers import Dense
 from keras.models import Sequential
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_regression
 from everywhereml.code_generators.tensorflow import tf_porter
-
-# Please install using pip install everywhereml
 
 EPOCHS = 500
 indx = range(EPOCHS)
