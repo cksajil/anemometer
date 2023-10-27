@@ -10,3 +10,6 @@ venv/
 
 # Data files
 dataset
+
+# Ignore Ipython checkpoints
+.ipynb_checkpoints/
