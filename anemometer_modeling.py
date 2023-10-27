@@ -9,6 +9,7 @@ from keras.models import Sequential
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from everywhereml.code_generators.tensorflow import tf_porter
+from tensorflow.keras.optimizers import Adam
 
 
 DATA_FOLDER = "dataset"
@@ -37,7 +38,7 @@ dnn_model = Sequential()
 dnn_model.add(Dense(4, kernel_initializer='normal',input_dim = X_train.shape[1], activation='relu'))
 dnn_model.add(Dense(8, kernel_initializer='normal',activation='relu'))
 dnn_model.add(Dense(16, kernel_initializer='normal',activation='relu'))
-dnn_model.add(Dense(4, kernel_initializer='normal',activation='relu'))
+dnn_model.add(Dense(8, kernel_initializer='normal',activation='relu'))
 dnn_model.add(Dense(1, kernel_initializer='normal',activation='linear'))
 
 
