@@ -20,9 +20,9 @@ HEADER_FILE_NAME = "dnn_model.h"
 PLOT_PATH = "plots"
 FIG_NAME = "train_validation_curve.png"
 MODEL_PATH = "model"
-MODEL_FILE = "best_model_{epoch:03d}_{val_mean_absolute_error:03f}.h5"
+MODEL_FILE = "best_model.h5"
 
-EPOCHS = 80
+EPOCHS = 8
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 indx = range(EPOCHS)
@@ -49,12 +49,16 @@ checkpoint_callback = ModelCheckpoint(
         mode="min",
         save_best_only=True)
 
-dnn_model = Sequential()
-dnn_model.add(Dense(32, kernel_initializer='normal',input_dim = X_train.shape[1], activation='relu'))
-dnn_model.add(Dense(64, kernel_initializer='normal',activation='relu'))
-dnn_model.add(Dense(128, kernel_initializer='normal',activation='relu'))
-dnn_model.add(Dense(16, kernel_initializer='normal',activation='relu'))
-dnn_model.add(Dense(1, kernel_initializer='normal',activation='linear'))
+def create_dnn_model():
+    model = Sequential()
+    model.add(Dense(32, kernel_initializer='normal',input_dim = X_train.shape[1], activation='relu'))
+    model.add(Dense(64, kernel_initializer='normal',activation='relu'))
+    model.add(Dense(128, kernel_initializer='normal',activation='relu'))
+    model.add(Dense(16, kernel_initializer='normal',activation='relu'))
+    model.add(Dense(1, kernel_initializer='normal',activation='linear'))
+    return model
+
+dnn_model = create_dnn_model()
 
 
 dnn_model.compile(loss='mean_absolute_error', 
@@ -84,3 +88,13 @@ cpp_code = porter.to_cpp(instance_name='dnn_model', arena_size=4096)
 
 with open(join(HEADER_FILES_FOLDER, HEADER_FILE_NAME), "w") as f:
         f.write(cpp_code)
+
+best_dnn_model = create_dnn_model()
+
+best_dnn_model.compile(loss='mean_absolute_error', 
+                       optimizer=adamopt,
+                       metrics=['mean_absolute_error'])
+
+best_dnn_model.load_weights(join(MODEL_PATH, MODEL_FILE))
+scores = best_dnn_model.evaluate(X_test, y_test)
+print("Mean absolute error of best dnn model on test data is: ", scores[0])
