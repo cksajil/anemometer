@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.callbacks import ModelCheckpoint
 from everywhereml.code_generators.tensorflow import tf_porter
 
 
@@ -18,6 +19,8 @@ HEADER_FILES_FOLDER = "headerfiles"
 HEADER_FILE_NAME = "dnn_model.h"
 PLOT_PATH = "plots"
 FIG_NAME = "train_validation_curve.png"
+MODEL_PATH = "model"
+MODEL_FILE = "best_model_{epoch:03d}_{val_mean_absolute_error:03f}.h5"
 
 EPOCHS = 80
 BATCH_SIZE = 32
@@ -39,6 +42,13 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 adamopt = Adam(learning_rate = LEARNING_RATE)
 
+checkpoint_callback = ModelCheckpoint(
+        filepath=join(MODEL_PATH, MODEL_FILE),
+        save_weights_only=True,
+        monitor="val_mean_absolute_error",
+        mode="min",
+        save_best_only=True)
+
 dnn_model = Sequential()
 dnn_model.add(Dense(32, kernel_initializer='normal',input_dim = X_train.shape[1], activation='relu'))
 dnn_model.add(Dense(64, kernel_initializer='normal',activation='relu'))
@@ -57,7 +67,8 @@ history = dnn_model.fit(X_train,
                         y_train, 
                         epochs=EPOCHS, 
                         batch_size=BATCH_SIZE, 
-                        validation_data = (X_test, y_test))
+                        validation_data = (X_test, y_test),
+                        callbacks=[checkpoint_callback])
 
 plt.plot(indx, history.history["loss"])
 plt.plot(indx, history.history["val_loss"])
