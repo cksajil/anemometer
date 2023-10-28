@@ -5,17 +5,19 @@
 import pandas as pd
 from os.path import join
 from keras.layers import Dense
-from keras.models import Sequential
 import matplotlib.pyplot as plt
+from keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from everywhereml.code_generators.tensorflow import tf_porter
-from tensorflow.keras.optimizers import Adam
 
 
 DATA_FOLDER = "dataset"
 DATA_FILE_NAME = "anemometer_data_full.csv"
 HEADER_FILES_FOLDER = "headerfiles"
 HEADER_FILE_NAME = "dnn_model.h"
+PLOT_PATH = "plots"
+FIG_NAME = "train_validation_curve.png"
 
 EPOCHS = 80
 BATCH_SIZE = 32
@@ -62,6 +64,7 @@ plt.plot(indx, history.history["val_loss"])
 plt.xlabel("Epochs")
 plt.ylabel("Mean Absolute Error")
 plt.legend(["train", "validation"], loc = "upper right")
+plt.savefig(join(PLOT_PATH, FIG_NAME), dpi=200)
 plt.show()
 
 porter = tf_porter(dnn_model, X, y)
