@@ -7,6 +7,7 @@ from os.path import join
 from keras.layers import Dense
 import matplotlib.pyplot as plt
 from keras.models import Sequential
+from sklearn.metrics import r2_score
 from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import ModelCheckpoint
@@ -22,7 +23,7 @@ FIG_NAME = "train_validation_curve.png"
 MODEL_PATH = "model"
 MODEL_FILE = "best_model.h5"
 
-EPOCHS = 8
+EPOCHS = 80
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 indx = range(EPOCHS)
@@ -62,8 +63,7 @@ dnn_model = create_dnn_model()
 
 
 dnn_model.compile(loss='mean_absolute_error', 
-                  optimizer=adamopt,
-                  metrics=['mean_absolute_error'])
+                  optimizer=adamopt)
 
 dnn_model.summary()
 
@@ -92,9 +92,12 @@ with open(join(HEADER_FILES_FOLDER, HEADER_FILE_NAME), "w") as f:
 best_dnn_model = create_dnn_model()
 
 best_dnn_model.compile(loss='mean_absolute_error', 
-                       optimizer=adamopt,
-                       metrics=['mean_absolute_error'])
+                       optimizer=adamopt)
 
 best_dnn_model.load_weights(join(MODEL_PATH, MODEL_FILE))
-scores = best_dnn_model.evaluate(X_test, y_test)
-print("Mean absolute error of best dnn model on test data is: ", scores[0])
+val_mae_score = best_dnn_model.evaluate(X_test, y_test)
+y_pred = best_dnn_model.predict(X_test)
+val_r2_score = r2_score(y_test, y_pred)
+
+print("Mean absolute error of best dnn model on test data is: ", val_mae_score)
+print("R2 score of best dnn model on test data is: ", val_r2_score)
