@@ -23,7 +23,7 @@ FIG_NAME = "train_validation_curve.png"
 MODEL_PATH = "model"
 MODEL_FILE = "best_model.h5"
 
-EPOCHS = 80
+EPOCHS = 100
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 indx = range(EPOCHS)
@@ -46,7 +46,7 @@ adamopt = Adam(learning_rate = LEARNING_RATE)
 checkpoint_callback = ModelCheckpoint(
         filepath=join(MODEL_PATH, MODEL_FILE),
         save_weights_only=True,
-        monitor="val_mean_absolute_error",
+        monitor="val_loss",
         mode="min",
         save_best_only=True)
 
@@ -62,8 +62,9 @@ def create_dnn_model():
 dnn_model = create_dnn_model()
 
 
-dnn_model.compile(loss='mean_absolute_error', 
-                  optimizer=adamopt)
+dnn_model.compile(loss='mean_squared_error', 
+                  optimizer=adamopt,
+                  metrics=['mean_absolute_error'])
 
 dnn_model.summary()
 
@@ -77,10 +78,10 @@ history = dnn_model.fit(X_train,
 plt.plot(indx, history.history["loss"])
 plt.plot(indx, history.history["val_loss"])
 plt.xlabel("Epochs")
-plt.ylabel("Mean Absolute Error")
+plt.ylabel("Mean Square Error")
 plt.legend(["train", "validation"], loc = "upper right")
 plt.savefig(join(PLOT_PATH, FIG_NAME), dpi=200)
-plt.show()
+# plt.show()
 
 porter = tf_porter(dnn_model, X, y)
 cpp_code = porter.to_cpp(instance_name='dnn_model', arena_size=4096)
@@ -91,13 +92,19 @@ with open(join(HEADER_FILES_FOLDER, HEADER_FILE_NAME), "w") as f:
 
 best_dnn_model = create_dnn_model()
 
-best_dnn_model.compile(loss='mean_absolute_error', 
-                       optimizer=adamopt)
+best_dnn_model.compile(loss='mean_squared_error', 
+                       optimizer=adamopt,
+                       metrics=['mean_absolute_error'])
 
 best_dnn_model.load_weights(join(MODEL_PATH, MODEL_FILE))
-val_mae_score = best_dnn_model.evaluate(X_test, y_test)
+
+val_scores = best_dnn_model.evaluate(X_test, y_test)
+val_mean_square_error = val_scores[0]
+val_mean_absolute_error = val_scores[1]
+
 y_pred = best_dnn_model.predict(X_test)
 val_r2_score = r2_score(y_test, y_pred)
 
-print("Mean absolute error of best dnn model on test data is: ", val_mae_score)
-print("R2 score of best dnn model on test data is: ", val_r2_score)
+print("Validation mean square error of best dnn model is: ", val_mean_square_error)
+print("Validation mean absolute error of best dnn model is: ", val_mean_absolute_error)
+print("Validation R2 score of best dnn model is: ", val_r2_score)
