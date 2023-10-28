@@ -23,7 +23,7 @@ FIG_NAME = "train_validation_curve.png"
 MODEL_PATH = "model"
 MODEL_FILE = "best_model.h5"
 
-EPOCHS = 100
+EPOCHS = 1000
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 indx = range(EPOCHS)
